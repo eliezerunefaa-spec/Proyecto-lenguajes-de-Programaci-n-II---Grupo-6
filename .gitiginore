@@ -1,0 +1,30 @@
+# =========================================
+# Contenido de un .gitignore
+# =========================================
+
+# 1. Ejecutables y Archivos Compilados (Basura Binaria)
+*.o
+*.out
+*.exe
+*.dll
+
+# 2. Directorios de compilación
+build/
+bin/
+obj/
+
+# 3. Archivos de Entorno y Variables Secretas (¡Seguridad!)
+.env
+*.env.local
+
+# 4. Logs e Historiales generados por ejecución
+*.log
+logs/
+
+# 5. Configuraciones locales del editor (VS Code)
+.vscode/
+*.code-workspace
+
+# 6. Archivos ocultos del Sistema Operativo
+Thumbs.db
+.DS_Store
