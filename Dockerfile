@@ -8,4 +8,4 @@ WORKDIR /app
 COPY . .
 
 # 4. COMPILACIÓN: Compilamos los archivos .cpp y generamos un ejecutable llamado "programa_grupo"
-RUN g++ -o programa_grupo *.cpp
+RUN g++ -o programa_grupo *.c
