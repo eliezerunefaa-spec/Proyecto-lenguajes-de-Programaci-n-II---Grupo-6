@@ -4,4 +4,4 @@
 4.Odalys Escalona 
 5.Xavier Tierado 
 6.Flor Mota 
-7.Diego Alvarado
+7.Diego Armando Alvarado.
