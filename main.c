@@ -2,59 +2,55 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_RUTINAS     50          
-#define MAX_EJERCICIO   50          
-#define ARCHIVO_DATOS   "rutinas.dat" 
+#define rutinas_limite     50          
+#define ejercicio_limite   50          
+#define archivo_datos   "rutinas.dat" 
 
 typedef struct {
     char dia[15];               
-    char ejercicio[MAX_EJERCICIO]; 
+    char ejercicio[ejercicio_limite]; 
     int  minutos;               
-} Rutina;
+} rutina;
 
-Rutina rutinas[MAX_RUTINAS];    
-int totalRutinas = 0;           
+rutina lista_rutinas[rutinas_limite];    
+int total_rutinas = 0;           
 
-void mostrarMenu(void);
-void registrarRutina(void);
-void mostrarTodasLasRutinas(void);
-void buscarRutinaPorDia(void);
-void editarRutina(void);
-void eliminarRutina(void);
-void mostrarTotalMinutos(void);
-void mostrarCreditos(void);
-void cargarDatos(void);
-void guardarDatos(void);
-void limpiarBuffer(void);
+void mostrar_menu(void);
+void registrar_rutina(void);
+void mostrar_todas_las_rutinas(void);
+void buscar_rutina_por_dia(void);
+void editar_rutina(void);
+void eliminar_rutina(void);
+void mostrar_total_minutos(void);
+void mostrar_creditos(void);
+void cargar_datos(void);
+void guardar_datos(void);
+void limpiar_buffer(void);
 void pausar(void);
-int  diaValido(const char *dia);
+int  dia_valido(const char *dia);
 
 int main(void) {
     int opcion;
 
-    
-    cargarDatos();
+    cargar_datos();
 
-    
     do {
-        mostrarMenu();
+        mostrar_menu();
 
-        
         printf("  Ingrese su opcion: ");
         if (scanf("%d", &opcion) != 1) {
             opcion = 0; 
         }
-        limpiarBuffer();
+        limpiar_buffer();
 
-        
         switch (opcion) {
-            case 1: registrarRutina();        break;
-            case 2: mostrarTodasLasRutinas(); break;
-            case 3: buscarRutinaPorDia();     break;
-            case 4: editarRutina();           break;
-            case 5: eliminarRutina();         break;
-            case 6: mostrarTotalMinutos();    break;
-            case 7: mostrarCreditos();        break;
+            case 1: registrar_rutina();        break;
+            case 2: mostrar_todas_las_rutinas(); break;
+            case 3: buscar_rutina_por_dia();     break;
+            case 4: editar_rutina();           break;
+            case 5: eliminar_rutina();         break;
+            case 6: mostrar_total_minutos();    break;
+            case 7: mostrar_creditos();        break;
             case 8:
                 printf("\n  Saliendo del sistema... Hasta pronto!\n\n");
                 break;
@@ -68,8 +64,7 @@ int main(void) {
     return 0;
 }
 
-void mostrarMenu(void) {
-    
+void mostrar_menu(void) {
     #ifdef _WIN32
         system("cls");
     #else
@@ -79,7 +74,7 @@ void mostrarMenu(void) {
     printf("============================================================\n");
     printf("        REGISTRO DE RUTINAS DE ENTRENAMIENTO                \n");
     printf("============================================================\n");
-    printf("  Rutinas registradas: %d / %d\n", totalRutinas, MAX_RUTINAS);
+    printf("  Rutinas registradas: %d / %d\n", total_rutinas, rutinas_limite);
     printf("------------------------------------------------------------\n");
     printf("  1. Registrar rutina\n");
     printf("  2. Mostrar todas las rutinas\n");
@@ -92,90 +87,82 @@ void mostrarMenu(void) {
     printf("------------------------------------------------------------\n");
 }
 
-void registrarRutina(void) {
+void registrar_rutina(void) {
     printf("\n============================================================\n");
     printf("                  REGISTRAR RUTINA                         \n");
     printf("============================================================\n");
 
-    
-    if (totalRutinas >= MAX_RUTINAS) {
-        printf("\n  [!] Limite maximo alcanzado (%d rutinas).\n", MAX_RUTINAS);
+    if (total_rutinas >= rutinas_limite) {
+        printf("\n  [!] Limite maximo alcanzado (%d rutinas).\n", rutinas_limite);
         pausar();
         return;
     }
 
-    Rutina nueva; 
+    rutina nueva; 
 
-    
     do {
         printf("  Dia de la semana (Lunes/Martes/Miercoles/Jueves/Viernes): ");
         fgets(nueva.dia, sizeof(nueva.dia), stdin);
         nueva.dia[strcspn(nueva.dia, "\n")] = '\0'; 
 
-        if (!diaValido(nueva.dia)) {
+        if (!dia_valido(nueva.dia)) {
             printf("  [!] Dia invalido. Solo se permiten dias de Lunes a Viernes.\n");
         }
-    } while (!diaValido(nueva.dia));
+    } while (!dia_valido(nueva.dia));
 
-    
     printf("  Nombre del ejercicio: ");
     fgets(nueva.ejercicio, sizeof(nueva.ejercicio), stdin);
     nueva.ejercicio[strcspn(nueva.ejercicio, "\n")] = '\0';
 
-    
     do {
         printf("  Duracion en minutos: ");
         if (scanf("%d", &nueva.minutos) != 1 || nueva.minutos <= 0) {
             printf("  [!] Ingrese un numero positivo de minutos.\n");
-            limpiarBuffer();
+            limpiar_buffer();
             nueva.minutos = 0;
         } else {
-            limpiarBuffer();
+            limpiar_buffer();
         }
     } while (nueva.minutos <= 0);
 
-    
-    rutinas[totalRutinas] = nueva;
-    totalRutinas++;
+    lista_rutinas[total_rutinas] = nueva;
+    total_rutinas++;
 
-    
-    guardarDatos();
+    guardar_datos();
 
     printf("\n  [OK] Rutina registrada exitosamente.\n");
     pausar();
 }
 
-void mostrarTodasLasRutinas(void) {
+void mostrar_todas_las_rutinas(void) {
     printf("\n============================================================\n");
     printf("               TODAS LAS RUTINAS                           \n");
     printf("============================================================\n");
 
-    if (totalRutinas == 0) {
+    if (total_rutinas == 0) {
         printf("  No hay rutinas registradas todavia.\n");
         pausar();
         return;
     }
 
-    
     printf("  %-4s %-12s %-30s %-8s\n", "No.", "Dia", "Ejercicio", "Minutos");
     printf("  -----------------------------------------------------------\n");
 
-    
-    for (int i = 0; i < totalRutinas; i++) {
+    for (int i = 0; i < total_rutinas; i++) {
         printf("  %-4d %-12s %-30s %-8d\n",
                i + 1,
-               rutinas[i].dia,
-               rutinas[i].ejercicio,
-               rutinas[i].minutos);
+               lista_rutinas[i].dia,
+               lista_rutinas[i].ejercicio,
+               lista_rutinas[i].minutos);
     }
 
     printf("  -----------------------------------------------------------\n");
-    printf("  Total de rutinas: %d\n", totalRutinas);
+    printf("  Total de rutinas: %d\n", total_rutinas);
     pausar();
 }
 
-void buscarRutinaPorDia(void) {
-    char diaBuscado[15];
+void buscar_rutina_por_dia(void) {
+    char dia_buscado[15];
     int encontradas = 0;
 
     printf("\n============================================================\n");
@@ -183,23 +170,22 @@ void buscarRutinaPorDia(void) {
     printf("============================================================\n");
 
     printf("  Dia a buscar (Lunes/Martes/Miercoles/Jueves/Viernes): ");
-    fgets(diaBuscado, sizeof(diaBuscado), stdin);
-    diaBuscado[strcspn(diaBuscado, "\n")] = '\0';
+    fgets(dia_buscado, sizeof(dia_buscado), stdin);
+    dia_buscado[strcspn(dia_buscado, "\n")] = '\0';
 
-    printf("\n  Rutinas para el dia: %s\n", diaBuscado);
+    printf("\n  Rutinas para el dia: %s\n", dia_buscado);
     printf("  -----------------------------------------------------------\n");
 
-    
-    for (int i = 0; i < totalRutinas; i++) {
+    for (int i = 0; i < total_rutinas; i++) {
         #ifdef _WIN32
-            int igual = (_stricmp(rutinas[i].dia, diaBuscado) == 0);
+            int igual = (_stricmp(lista_rutinas[i].dia, dia_buscado) == 0);
         #else
-            int igual = (strcasecmp(rutinas[i].dia, diaBuscado) == 0);
+            int igual = (strcasecmp(lista_rutinas[i].dia, dia_buscado) == 0);
         #endif
 
         if (igual) {
             printf("  [%d] Ejercicio: %-30s | %d minutos\n",
-                   i + 1, rutinas[i].ejercicio, rutinas[i].minutos);
+                   i + 1, lista_rutinas[i].ejercicio, lista_rutinas[i].minutos);
             encontradas++;
         }
     }
@@ -214,33 +200,31 @@ void buscarRutinaPorDia(void) {
     pausar();
 }
 
-void editarRutina(void) {
+void editar_rutina(void) {
     int numero;
 
     printf("\n============================================================\n");
     printf("                  EDITAR RUTINA                            \n");
     printf("============================================================\n");
 
-    if (totalRutinas == 0) {
+    if (total_rutinas == 0) {
         printf("  No hay rutinas para editar.\n");
         pausar();
         return;
     }
 
-    
-    mostrarTodasLasRutinas();
+    mostrar_todas_las_rutinas();
 
-    printf("  Numero de rutina a editar (1 - %d): ", totalRutinas);
+    printf("  Numero de rutina a editar (1 - %d): ", total_rutinas);
     if (scanf("%d", &numero) != 1) {
-        limpiarBuffer();
+        limpiar_buffer();
         printf("  [!] Entrada invalida.\n");
         pausar();
         return;
     }
-    limpiarBuffer();
+    limpiar_buffer();
 
-    
-    if (numero < 1 || numero > totalRutinas) {
+    if (numero < 1 || numero > total_rutinas) {
         printf("  [!] Numero fuera de rango.\n");
         pausar();
         return;
@@ -249,72 +233,68 @@ void editarRutina(void) {
     int idx = numero - 1; 
 
     printf("\n  Editando: %s - %s (%d min)\n",
-           rutinas[idx].dia, rutinas[idx].ejercicio, rutinas[idx].minutos);
+           lista_rutinas[idx].dia, lista_rutinas[idx].ejercicio, lista_rutinas[idx].minutos);
     printf("  (Presione Enter para conservar el valor actual)\n\n");
 
-    
-    char temp[50];
-    printf("  Nuevo dia [%s]: ", rutinas[idx].dia);
-    fgets(temp, sizeof(temp), stdin);
-    temp[strcspn(temp, "\n")] = '\0';
-    if (strlen(temp) > 0 && diaValido(temp)) {
-        strcpy(rutinas[idx].dia, temp);
-    } else if (strlen(temp) > 0) {
+    char temporal[50];
+    printf("  Nuevo dia [%s]: ", lista_rutinas[idx].dia);
+    fgets(temporal, sizeof(temporal), stdin);
+    temporal[strcspn(temporal, "\n")] = '\0';
+    if (strlen(temporal) > 0 && dia_valido(temporal)) {
+        strcpy(lista_rutinas[idx].dia, temporal);
+    } else if (strlen(temporal) > 0) {
         printf("  [!] Dia invalido, se conserva el anterior.\n");
     }
 
-    
-    printf("  Nuevo ejercicio [%s]: ", rutinas[idx].ejercicio);
-    fgets(temp, sizeof(temp), stdin);
-    temp[strcspn(temp, "\n")] = '\0';
-    if (strlen(temp) > 0) {
-        strcpy(rutinas[idx].ejercicio, temp);
+    printf("  Nuevo ejercicio [%s]: ", lista_rutinas[idx].ejercicio);
+    fgets(temporal, sizeof(temporal), stdin);
+    temporal[strcspn(temporal, "\n")] = '\0';
+    if (strlen(temporal) > 0) {
+        strcpy(lista_rutinas[idx].ejercicio, temporal);
     }
 
-    
-    printf("  Nuevos minutos [%d]: ", rutinas[idx].minutos);
-    fgets(temp, sizeof(temp), stdin);
-    temp[strcspn(temp, "\n")] = '\0';
-    if (strlen(temp) > 0) {
-        int nuevosMin = atoi(temp);
-        if (nuevosMin > 0) {
-            rutinas[idx].minutos = nuevosMin;
+    printf("  Nuevos minutos [%d]: ", lista_rutinas[idx].minutos);
+    fgets(temporal, sizeof(temporal), stdin);
+    temporal[strcspn(temporal, "\n")] = '\0';
+    if (strlen(temporal) > 0) {
+        int nuevos_minutos = atoi(temporal);
+        if (nuevos_minutos > 0) {
+            lista_rutinas[idx].minutos = nuevos_minutos;
         } else {
             printf("  [!] Valor invalido, se conservan los minutos anteriores.\n");
         }
     }
 
-    
-    guardarDatos();
+    guardar_datos();
     printf("\n  [OK] Rutina actualizada correctamente.\n");
     pausar();
 }
 
-void eliminarRutina(void) {
+void eliminar_rutina(void) {
     int numero;
 
     printf("\n============================================================\n");
     printf("                 ELIMINAR RUTINA                           \n");
     printf("============================================================\n");
 
-    if (totalRutinas == 0) {
+    if (total_rutinas == 0) {
         printf("  No hay rutinas para eliminar.\n");
         pausar();
         return;
     }
 
-    mostrarTodasLasRutinas();
+    mostrar_todas_las_rutinas();
 
-    printf("  Numero de rutina a eliminar (1 - %d): ", totalRutinas);
+    printf("  Numero de rutina a eliminar (1 - %d): ", total_rutinas);
     if (scanf("%d", &numero) != 1) {
-        limpiarBuffer();
+        limpiar_buffer();
         printf("  [!] Entrada invalida.\n");
         pausar();
         return;
     }
-    limpiarBuffer();
+    limpiar_buffer();
 
-    if (numero < 1 || numero > totalRutinas) {
+    if (numero < 1 || numero > total_rutinas) {
         printf("  [!] Numero fuera de rango.\n");
         pausar();
         return;
@@ -322,12 +302,11 @@ void eliminarRutina(void) {
 
     int idx = numero - 1;
 
-    
     char confirmacion;
     printf("  Confirma eliminar '%s - %s'? (s/n): ",
-           rutinas[idx].dia, rutinas[idx].ejercicio);
+           lista_rutinas[idx].dia, lista_rutinas[idx].ejercicio);
     confirmacion = getchar();
-    limpiarBuffer();
+    limpiar_buffer();
 
     if (confirmacion != 's' && confirmacion != 'S') {
         printf("  Eliminacion cancelada.\n");
@@ -335,48 +314,44 @@ void eliminarRutina(void) {
         return;
     }
 
-    
-    for (int i = idx; i < totalRutinas - 1; i++) {
-        rutinas[i] = rutinas[i + 1];
+    for (int i = idx; i < total_rutinas - 1; i++) {
+        lista_rutinas[i] = lista_rutinas[i + 1];
     }
-    totalRutinas--;
+    total_rutinas--;
 
-    guardarDatos();
+    guardar_datos();
     printf("\n  [OK] Rutina eliminada correctamente.\n");
     pausar();
 }
 
-void mostrarTotalMinutos(void) {
-    int totalMin = 0;
+void mostrar_total_minutos(void) {
+    int total_minutos = 0;
 
     printf("\n============================================================\n");
     printf("              TOTAL DE MINUTOS ENTRENADOS                  \n");
     printf("============================================================\n");
 
-    if (totalRutinas == 0) {
+    if (total_rutinas == 0) {
         printf("  No hay rutinas registradas.\n");
         pausar();
         return;
     }
 
-    
-    for (int i = 0; i < totalRutinas; i++) {
-        totalMin += rutinas[i].minutos;
+    for (int i = 0; i < total_rutinas; i++) {
+        total_minutos += lista_rutinas[i].minutos;
     }
 
-    
-    int horas   = totalMin / 60;
-    int minRest = totalMin % 60;
+    int horas   = total_minutos / 60;
+    int minutos_restantes = total_minutos % 60;
 
-    printf("  Rutinas registradas: %d\n", totalRutinas);
-    printf("  Total de minutos:    %d minutos\n", totalMin);
-    printf("  Equivale a:          %d hora(s) y %d minuto(s)\n", horas, minRest);
+    printf("  Rutinas registradas: %d\n", total_rutinas);
+    printf("  Total de minutos:    %d minutos\n", total_minutos);
+    printf("  Equivale a:          %d hora(s) y %d minuto(s)\n", horas, minutos_restantes);
 
-    
     printf("\n  ");
-    if (totalMin < 60) {
+    if (total_minutos < 60) {
         printf("Buen comienzo! Sigue adelante.\n");
-    } else if (totalMin < 300) {
+    } else if (total_minutos < 300) {
         printf("Muy bien! Vas por buen camino.\n");
     } else {
         printf("Excelente constancia! Eres una maquina.\n");
@@ -385,10 +360,9 @@ void mostrarTotalMinutos(void) {
     pausar();
 }
 
-void mostrarCreditos(void) {
+void mostrar_creditos(void) {
     printf("\n============================================================\n");
     printf("                      CREDITOS                             \n");
-    printf("============================================================\n");
     printf("\n");
     printf("  PROYECTO: Registro de Rutinas de Entrenamiento\n");
     printf("  ASIGNATURA: Lenguaje II\n");
@@ -413,63 +387,58 @@ void mostrarCreditos(void) {
     pausar();
 }
 
-void cargarDatos(void) {
-    FILE *archivo = fopen(ARCHIVO_DATOS, "rb");
+void cargar_datos(void) {
+    FILE *archivo = fopen(archivo_datos, "rb");
 
     if (archivo == NULL) {
-        
-        totalRutinas = 0;
+        total_rutinas = 0;
         return;
     }
 
-    
-    fread(&totalRutinas, sizeof(int), 1, archivo);
+    fread(&total_rutinas, sizeof(int), 1, archivo);
 
-    
-    if (totalRutinas > MAX_RUTINAS) {
-        totalRutinas = MAX_RUTINAS;
+    if (total_rutinas > rutinas_limite) {
+        total_rutinas = rutinas_limite;
     }
 
-    fread(rutinas, sizeof(Rutina), totalRutinas, archivo);
+    fread(lista_rutinas, sizeof(rutina), total_rutinas, archivo);
 
     fclose(archivo);
 }
 
-void guardarDatos(void) {
-    FILE *archivo = fopen(ARCHIVO_DATOS, "wb");
+void guardar_datos(void) {
+    FILE *archivo = fopen(archivo_datos, "wb");
 
     if (archivo == NULL) {
         printf("  [ERROR] No se pudo abrir el archivo para guardar.\n");
         return;
     }
 
-    
-    fwrite(&totalRutinas, sizeof(int), 1, archivo);
-    fwrite(rutinas, sizeof(Rutina), totalRutinas, archivo);
+    fwrite(&total_rutinas, sizeof(int), 1, archivo);
+    fwrite(lista_rutinas, sizeof(rutina), total_rutinas, archivo);
 
     fclose(archivo);
 }
 
-int diaValido(const char *dia) {
-    
-    const char *diasPermitidos[] = {
+int dia_valido(const char *dia) {
+    const char *dias_permitidos[] = {
         "Lunes", "Martes", "Miercoles", "Jueves", "Viernes",
         "lunes", "martes", "miercoles", "jueves", "viernes",
         "LUNES", "MARTES", "MIERCOLES", "JUEVES", "VIERNES"
     };
-    int cantDias = 15;
+    int cantidad_dias = 15;
 
-    for (int i = 0; i < cantDias; i++) {
-        if (strcmp(dia, diasPermitidos[i]) == 0) {
+    for (int i = 0; i < cantidad_dias; i++) {
+        if (strcmp(dia, dias_permitidos[i]) == 0) {
             return 1; 
         }
     }
     return 0; 
 }
 
-void limpiarBuffer(void) {
-    int c;
-    while ((c = getchar()) != '\n' && c != EOF);
+void limpiar_buffer(void) {
+    int caracter;
+    while ((caracter = getchar()) != '\n' && caracter != EOF);
 }
 
 void pausar(void) {
